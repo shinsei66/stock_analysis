@@ -73,5 +73,10 @@ df_trn.sort_values(by=['date', 'trade_order'],inplace=True)
 # Set a counter to clarify the multiple trade of the same brand
 df_trn['counter'] = 1
 
+# Special treatment for stock dividend
+df_trn.loc[df_trn.query('date<"2019-06-28" & brand_code==9984').index,
+'Qty'] = df_trn.iloc[df_trn.query('date<"2019-06-28" & brand_code==9984').index,
+:]['Qty'].apply(lambda x:x*2)
+
 # Save cleansed trade history data as a csv file
 df_trn.to_csv(f'{cdir}/{trade_hist}', index=False, encoding='SHIFT-JIS')

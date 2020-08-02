@@ -10,7 +10,7 @@ import seaborn as sns
 import matplotlib.dates as mdates
 import sys
 import time
-#sys.path.append('C:\\Users\\skysq\\data_analysis\\stock_analysis')
+sys.path.append('C:\\Users\\skysq\\data_analysis\\stock_analysis')
 from config import *
 import stock_hist_data as shd
 import stock_price_hist as sph
