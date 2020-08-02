@@ -1,0 +1,7 @@
+!.gitkeep
+/__pycache__/*
+/*.csv
+/*ipynb
+/data.py
+/*jpg
+/*.png

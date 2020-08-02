@@ -1,0 +1,7 @@
+numpy
+tqdm
+pandas
+matplotlib
+seaborn
+yfinance >= 0.1.54
+forex-python == 1.5
