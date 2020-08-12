@@ -38,7 +38,7 @@ def get_stocks(stks):
 def main():
     stock_hist = get_stocks(stock_hist_data.brand_list['brand_code'])
     stock_hist.dropna(inplace=True,axis=0,how='all')
-    stock_hist.drop('Adj Close',inplace=True, axis=1)
+    stock_hist.drop('Adj Close',inplace=True, axis=1, errors='ignore')
     print(stock_hist.shape)
     if ifexdata:
         df_add = pd.read_csv(f'{cdir}/7352.csv')
