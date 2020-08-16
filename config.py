@@ -17,6 +17,7 @@ startdate = '2018-10-15' #The minimum date within the trade history data
 enddate = '2020-07-28' #The maximum date within the trade history data
 asset_history = 'asset_history.csv'
 ifexdata = True #In case we have external stock data, set True. we need customize this part by ourselves
+partition = '202007'
 
 executionstart = time.time()
 

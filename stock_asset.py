@@ -368,7 +368,7 @@ def main():
 	plt.ylabel('1,000 JPY')
 	plt.title('Stock Asset Price History')
 	#plt.show()
-	plt.savefig(f'{cdir}/Stock Asset Price History_202007.png')
+	plt.savefig(f'{cdir}/Stock Asset Price History_{partition}.png')
 
 
 	file_list = glob.glob(f'{cdir}/history/*.csv')
@@ -379,6 +379,9 @@ def main():
 	df = pd.merge(df, df_asset_history[['date', 'stock_asset_ttl']], how='left', left_on ='日付', right_on='date' )
 	df.fillna(0,inplace=True)
 	df['株式(現物)（円）'] = df['株式(現物)（円）'].copy() + df['stock_asset_ttl'].copy()
+	
+	
+	
 	fig = plt.figure(figsize=(12,8))
 	ax = fig.add_subplot(1,1,1)
 	time_range = len(df)
@@ -407,8 +410,15 @@ def main():
 	plt.xlabel('Year-Month')
 	plt.ylabel('1,000 JPY')
 	plt.title('Asset History')
-	plt.savefig(f'{cdir}/Asset_History_202007.png')
+	plt.savefig(f'{cdir}/Asset_History_{partition}.png')
 	#plt.show()
+	print(df.columns)
+	df.columns = ['date', 'total', 'cash', 'point','stock','pension'
+	,'trust','margin', 'date1', 'stock_asset_ttl']
+	df = df[['date', 'total', 'cash', 'point','stock','pension'
+	,'trust','margin']]
+	df['ym'] = partition
+	df.to_csv(f'{cdir}/asset_history_{partition}.csv', index=False)
 
 if __name__ == "__main__":
     main()
