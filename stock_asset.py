@@ -18,6 +18,7 @@ import datetime
 import numpy as np
 import matplotlib as mpl
 import warnings
+import glob
 warnings.filterwarnings('ignore')
 
 sts_date = pd.to_datetime(startdate)
@@ -54,6 +55,16 @@ hold_asset[str(pdt)] = {}
 hold_asset[str(pdt)]['date'] = str(pdt)
 hold_asset[str(pdt)]['stock_info'] = {}
 
+def read_csvlist(list):
+    df_tmp = pd.DataFrame()
+    df_list = []
+    for f in tqdm(list):
+        df_tmp = pd.read_csv(f'{f}',encoding='SHIFT-JIS')
+        df_list.append(df_tmp)
+    df = pd.concat(df_list, sort=False,axis=0)
+    print(df.shape)
+    df.reset_index(drop=True, inplace=True)
+    return df
 
 def main():
 	for cnt, dt in tqdm(enumerate(daterange)):
@@ -331,7 +342,7 @@ def main():
 	df_asset_history['US_stock_asset_JPY'] = df_asset_history['US_stock_asset'] * df_asset_history['ex_rate']
 	df_asset_history['stock_asset_ttl'] = df_asset_history['JPN_stock_asset']+df_asset_history['US_stock_asset_JPY']
 
-	df_asset_history.to_csv(f'{cdir}/{asset_history}',index=False)
+	df_asset_history.to_csv(f'{cdir}/{asset_history}_{partition}.csv',index=False)
 
 	fig = plt.figure(figsize=(10,5.5))
 	ax = fig.add_subplot(1,1,1)
@@ -357,7 +368,65 @@ def main():
 	plt.ylabel('1,000 JPY')
 	plt.title('Stock Asset Price History')
 	#plt.show()
-	plt.savefig(f'{cdir}/Stock Asset Price History.png')
+	plt.savefig(f'{cdir}/Stock Asset Price History_{partition}.png')
+
+
+	file_list = glob.glob(f'{cdir}/history/*.csv')
+	df = read_csvlist(file_list)
+	df_asset_history = pd.read_csv(f'{cdir}/{asset_history}_{partition}.csv')
+	df_asset_history['stock_data_fix'] = df_asset_history['stock_asset_ttl'].copy()
+	df_asset_history.loc[ df_asset_history.query('date > @datafix_enddate').index, 'stock_data_fix'] = 0
+	df['日付'] = df['日付'].apply(lambda x:pd.to_datetime(x))
+	df_asset_history['date'] = pd.to_datetime(df_asset_history['date'])
+	df = pd.merge(df, df_asset_history[['date', 'stock_asset_ttl', 'stock_data_fix']], how='left', left_on ='日付', right_on='date' )
+	df.fillna(0,inplace=True)
+
+	df['株式(現物)（円）'] = df['株式(現物)（円）'].copy() + df['stock_data_fix'].copy()
+	
+	
+	
+	fig = plt.figure(figsize=(12,8))
+	ax = fig.add_subplot(1,1,1)
+	time_range = len(df)
+	x = pd.date_range(pd.to_datetime('2014-08-24'), periods=time_range, freq='d')
+	x = mdates.date2num(x)
+
+	y=[ list(df['預金・現金・仮想通貨（円）'].values),
+	list(df['株式(現物)（円）'].values),
+	list(df['年金（円）'].values),
+	list(df['投資信託（円）'].values),
+	list(df['債券（円）'].values),
+	list(df['株式(信用)（円）'].values),
+	list(df['ポイント（円）'].values),
+	]
+	
+	# Plot
+	plt.stackplot(x,y, labels=['Cash','Stock', 'Pension', 'ETF', 'Bond', 'Margin' 'Point'])
+	yms = mdates.MonthLocator(interval=3) 
+	ymFmt = mdates.DateFormatter('%Y-%m')
+	ax.xaxis.set_major_locator(yms)
+	ax.xaxis.set_major_formatter(ymFmt)
+	ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x/10**3))))
+
+	labels = ax.get_xticklabels()
+
+	plt.setp(labels, rotation=45, fontsize=10)
+	plt.legend(loc='upper left')
+	plt.xlabel('Year-Month')
+	plt.ylabel('1,000 JPY')
+	plt.title('Asset History')
+	plt.savefig(f'{cdir}/Asset_History_{partition}.png')
+	#plt.show()
+	print(df.columns)
+	df.columns = ['date', 'total', 'cash', 'point','stock','pension'
+	,'trust','margin', 'bond', 'date1', 'stock_asset_ttl','stock_data_fix']
+	df = df[['date', 'total', 'cash', 'point','stock','pension'
+	,'trust', 'bond','margin']]
+	df['ym'] = partition
+	df.to_csv(f'{cdir}/asset_history_{partition}.csv', index=False)
+	df_stack = df.set_index(['date', 'ym']).stack(dropna=False).reset_index()
+	df_stack.columns = ['date', 'ym', 'dimension', 'value']
+	df_stack.to_csv(f'{cdir}/asset_history_stack_{partition}.csv', index=False)
 
 if __name__ == "__main__":
     main()
