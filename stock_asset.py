@@ -342,7 +342,7 @@ def main():
 	df_asset_history['US_stock_asset_JPY'] = df_asset_history['US_stock_asset'] * df_asset_history['ex_rate']
 	df_asset_history['stock_asset_ttl'] = df_asset_history['JPN_stock_asset']+df_asset_history['US_stock_asset_JPY']
 
-	df_asset_history.to_csv(f'{cdir}/{asset_history}',index=False)
+	df_asset_history.to_csv(f'{cdir}/{asset_history}_{partition}.csv',index=False)
 
 	fig = plt.figure(figsize=(10,5.5))
 	ax = fig.add_subplot(1,1,1)
@@ -373,12 +373,15 @@ def main():
 
 	file_list = glob.glob(f'{cdir}/history/*.csv')
 	df = read_csvlist(file_list)
-	df_asset_history = pd.read_csv(f'{cdir}/asset_history.csv')
+	df_asset_history = pd.read_csv(f'{cdir}/{asset_history}_{partition}.csv')
+	df_asset_history['stock_data_fix'] = df_asset_history['stock_asset_ttl'].copy()
+	df_asset_history.loc[ df_asset_history.query('date > @datafix_enddate').index, 'stock_data_fix'] = 0
 	df['日付'] = df['日付'].apply(lambda x:pd.to_datetime(x))
 	df_asset_history['date'] = pd.to_datetime(df_asset_history['date'])
-	df = pd.merge(df, df_asset_history[['date', 'stock_asset_ttl']], how='left', left_on ='日付', right_on='date' )
+	df = pd.merge(df, df_asset_history[['date', 'stock_asset_ttl', 'stock_data_fix']], how='left', left_on ='日付', right_on='date' )
 	df.fillna(0,inplace=True)
-	df['株式(現物)（円）'] = df['株式(現物)（円）'].copy() + df['stock_asset_ttl'].copy()
+
+	df['株式(現物)（円）'] = df['株式(現物)（円）'].copy() + df['stock_data_fix'].copy()
 	
 	
 	
@@ -392,11 +395,13 @@ def main():
 	list(df['株式(現物)（円）'].values),
 	list(df['年金（円）'].values),
 	list(df['投資信託（円）'].values),
+	list(df['債券（円）'].values),
+	list(df['株式(信用)（円）'].values),
 	list(df['ポイント（円）'].values),
 	]
 	
 	# Plot
-	plt.stackplot(x,y, labels=['Cash','Stock', 'Pension', 'ETF', 'Point'])
+	plt.stackplot(x,y, labels=['Cash','Stock', 'Pension', 'ETF', 'Bond', 'Margin' 'Point'])
 	yms = mdates.MonthLocator(interval=3) 
 	ymFmt = mdates.DateFormatter('%Y-%m')
 	ax.xaxis.set_major_locator(yms)
@@ -414,11 +419,14 @@ def main():
 	#plt.show()
 	print(df.columns)
 	df.columns = ['date', 'total', 'cash', 'point','stock','pension'
-	,'trust','margin', 'date1', 'stock_asset_ttl']
+	,'trust','margin', 'bond', 'date1', 'stock_asset_ttl','stock_data_fix']
 	df = df[['date', 'total', 'cash', 'point','stock','pension'
-	,'trust','margin']]
+	,'trust', 'bond','margin']]
 	df['ym'] = partition
 	df.to_csv(f'{cdir}/asset_history_{partition}.csv', index=False)
+	df_stack = df.set_index(['date', 'ym']).stack(dropna=False).reset_index()
+	df_stack.columns = ['date', 'ym', 'dimension', 'value']
+	df_stack.to_csv(f'{cdir}/asset_history_stack_{partition}.csv', index=False)
 
 if __name__ == "__main__":
     main()

@@ -14,10 +14,11 @@ stock_price = 'stock_price.csv' #Gathered stock price data
 
 # parameters
 startdate = '2018-10-15' #The minimum date within the trade history data
-enddate = '2020-07-28' #The maximum date within the trade history data
-asset_history = 'asset_history.csv'
+enddate = '2020-08-31' #The maximum date within the trade history data
+datafix_enddate = '2020-07-28'
+asset_history = 'asset_history'
 ifexdata = True #In case we have external stock data, set True. we need customize this part by ourselves
-partition = '202007'
+partition = '202008'
 
 executionstart = time.time()
 
