@@ -15,9 +15,12 @@ This repository shows how to create daily stock asset price data by cleansing th
 # Usage
 There are 4 steps as follows that is really simple.
 1. Install the required packages.
-2. Down load the input trading historical data from SBI securities and place them in the this repository.
-3. Change the setting parameter and file names within the "config.py".
-4. Run codes.
+2. Download the input trading historical data from SBI securities and place them in the this repository.
+3. Dowload the monthly detail asset data from moneyforward.
+4. Change the setting parameter and file names within the "config.py".
+    - partition
+5. Run codes.
+6. Copy and paste the output file : asset_history_stack_{partition}.csv to the google spread sheet
 
 ## Install requirement.txt
 
