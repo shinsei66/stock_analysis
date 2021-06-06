@@ -9,9 +9,11 @@ This repository shows how to create daily stock asset price data by cleansing th
 - config.py
 
 ### Inputs
-
+- Daily asset historical data by month.
+- Stock price data obtianed from yfinance.
+- Trade history data in order to recover the missing-data time span.
 ### Outputs
-
+- Stacked historical asset data: asset_history_stack_20200X.csv
 # Usage
 There are 4 steps as follows that is really simple.
 1. Install the required packages.

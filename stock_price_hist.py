@@ -57,6 +57,6 @@ def main():
     return stock_hist
 
 
-stock_hist = main()
-#if __name__ == "__main__":
-#    main()
+# stock_hist = main()
+if __name__ == "__main__":
+   stock_hist = main()
