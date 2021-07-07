@@ -80,31 +80,6 @@ def main():
     df_stack.columns = ['date', 'ym', 'dimension', 'value']
     df_stack.to_csv(f'{cdir}/asset_history_stack_{partition}.csv', index=False)
 
-    # # Plot
-    # fig = plt.figure(figsize=(10,5.5))
-    # ax = fig.add_subplot(1,1,1)
-    # time_range = len(df_asset_history)
-    # x = pd.date_range(pd.to_datetime('2018-10-14'), periods=time_range, freq='d')
-    # x = mdates.date2num(x)
-    # y=[ list(df_asset_history.JPN_stock_asset.values),
-    #  list(df_asset_history.US_stock_asset_JPY.values)]
-
-    # plt.stackplot(x,y, labels=['JP stock','US stock'])
-    # yms = mdates.MonthLocator(interval=3)
-    # ymFmt = mdates.DateFormatter('%Y-%m')
-    # ax.xaxis.set_major_locator(yms)
-    # ax.xaxis.set_major_formatter(ymFmt)
-    # ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x/10**3))))
-
-    # labels = ax.get_xticklabels()
-
-    # plt.setp(labels, rotation=45, fontsize=10)
-    # plt.legend(loc='upper left')
-    # plt.xlabel('Year-Month')
-    # plt.ylabel('1,000 JPY')
-    # plt.title('Stock Asset Price History')
-    # #plt.show()
-    # plt.savefig(f'{cdir}/Stock Asset Price History_{partition}.png')
 
     # 資産内訳の可視化
     fig = plt.figure(figsize=(12, 8))

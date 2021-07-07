@@ -8,3 +8,4 @@
 /history/*.csv
 /history/common/*.csv
 /history/common/usage/*.csv
+/data/*.csv
