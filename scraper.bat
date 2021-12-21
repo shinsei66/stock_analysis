@@ -1,4 +1,3 @@
-echo a > test.txt
 cd data_analysis\stock_analysis
 call C:\Users\skysq\AppData\Local\Continuum\anaconda3\Scripts\activate.bat
 call activate analysis
