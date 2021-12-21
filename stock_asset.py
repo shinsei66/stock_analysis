@@ -75,7 +75,7 @@ def main():
     df = df[['date', 'total', 'cash', 'point',
              'stock', 'pension', 'trust', 'bond', 'margin']]
     df['ym'] = partition
-    df.to_csv(f'{cdir}/asset_history_{partition}.csv', index=False)
+    df.to_csv(f'{cdir}/output/asset_history_{partition}.csv', index=False)
     df_stack = df.set_index(['date', 'ym']).stack(dropna=False).reset_index()
     df_stack.columns = ['date', 'ym', 'dimension', 'value']
     df_stack.to_csv(f'{cdir}/asset_history_stack_{partition}.csv', index=False)
